@@ -31,6 +31,6 @@ class Person constructor(var name: String){
     }
 }
 
-data class Cat(val name: String)
+data     class Cat(val name: String)
 
 open
