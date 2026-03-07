@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Resources</string>
+    <string name="welcome">Welcome</string>
+    <string name="login_button">Login</string>
+    <string name="hello">Hello, my name is %1$s, I`m %2$d years old</string>
+
+    <plurals name="cats">
+        <item quantity="one">%d cat</item>
+        <item quantity="other">%d cats</item>
+    </plurals>
+</resources>

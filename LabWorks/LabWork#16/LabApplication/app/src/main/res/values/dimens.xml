@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="search_height">80.dp</dimen>
+
+    <dimen name="menu_height">50.dp</dimen>
+    <dimen name="menu_weight">80.dp</dimen>
+
+    <dimen name="image_height">60.dp</dimen>
+    <dimen name="image_weight">60.dp</dimen>
+</resources>

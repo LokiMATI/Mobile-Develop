@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">LabApplication</string>
+    <string name="search">Search</string>
+    <string name="menu">Menu</string>
+    <string name="copy_right">«© %1$s. All rights reserved. %2$d</string>
+    <string name="developers">Developers</string>
+
+    <plurals name="hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+    <plurals name="minutes">
+        <item quantity="one">minute</item>
+        <item quantity="other">minutes</item>
+    </plurals>
+
+    <string-array name="developers">
+        <item>Lucky</item>
+        <item>Nikita</item>
+    </string-array>
+</resources>
