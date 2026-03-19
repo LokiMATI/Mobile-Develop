@@ -90,7 +90,7 @@ fun RotationAnimationExample(){
 
     val rotation by animateFloatAsState(
         targetValue = if (rotated) 360f else 0f,
-        animationSpec = tween(1000, easing = CubicBezierEasing())
+        animationSpec = tween(1000)
     )
 
     Box(
