@@ -30,12 +30,15 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -58,10 +61,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.clicker.screens.GameScreen
+import com.example.clicker.screens.ShopScreen
 import com.example.clicker.ui.theme.ClickerTheme
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -85,6 +94,14 @@ fun ClickerGame(vm : GameViewModel = viewModel()){
     ) }
     val corutineScope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+        while (true){
+            delay(1000)
+            vm.onAutoClick()
+        }
+    }
+
+
     ClickerTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
             topBar = {
@@ -99,7 +116,7 @@ fun ClickerGame(vm : GameViewModel = viewModel()){
                         textAlign = TextAlign.Center,
                         fontSize = 30.sp,
                         color = MaterialTheme.colorScheme.onPrimaryContainer)
-                    Text(vm.score.toString(),
+                    Text("%.2f".format(vm.score),
                         textAlign = TextAlign.Center,
                         fontSize = 30.sp,
                         color = MaterialTheme.colorScheme.onPrimaryContainer)
@@ -146,78 +163,36 @@ fun ClickerGame(vm : GameViewModel = viewModel()){
             }
         }
     }
+
+    ApplicationLifeTimeObserver { vm.saveData() }
 }
 
 @Composable
-fun ShopScreen(vm: GameViewModel){
-    Column(Modifier.fillMaxSize()){
-        Button({})
-        { Text("Кнопка 1")}
+fun ApplicationLifeTimeObserver(onExit: ()->Unit){
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-        Button({})
-        { Text("Кнопка 2")}
-
-        Button({})
-        { Text("Кнопка 3")}
-    }
-}
-
-@Composable
-fun GameScreen(vm : GameViewModel){
-    Box(Modifier.fillMaxSize()){
-        val particles = remember { mutableStateListOf<Particle>() }
-        var buttonPosition by remember { mutableStateOf(Offset.Zero) }
-        var isPressed by remember { mutableStateOf(false) }
-        val scale by animateFloatAsState(
-            if (isPressed) 0.95f else 1f,
-            animationSpec = tween(100)
-        )
-        Box(Modifier
-            .size(300.dp)
-            .clip(CircleShape)
-            .align(Alignment.Center)
-//            .clickable{
-//                vm.onTap()
-//                repeat(5){
-//                    particles.add(Particle(50f, 50f))
-//                }
-//            }
-            .onGloballyPositioned{
-                buttonPosition = it.positionInParent()
+    DisposableEffect(lifecycleOwner) {
+        val observer = object : DefaultLifecycleObserver{
+            override fun onStop(owner: LifecycleOwner) {
+                onExit()
+                super.onStop(owner)
             }
-            .pointerInput(Unit){
-                coroutineScope {
-                    while (true){
-                        awaitPointerEventScope {
-                            val down = awaitFirstDown()
-                            val pos = down.position + buttonPosition
-                            isPressed = true
-                            vm.onTap()
-                            repeat(5){
-                                particles.add(Particle(pos.x, pos.y))
-                            }
-                            down.consume()
 
-                            val up = waitForUpOrCancellation()
-                            if (up != null){
-                                isPressed = false
-                            }
-                        }
-                    }
-                }
+            override fun onDestroy(owner: LifecycleOwner) {
+                onExit()
+                super.onDestroy(owner)
             }
-        ){
-            Image(painterResource(R.drawable.cthulhu_star),
-                "Background",
-                modifier = Modifier.fillMaxSize())
 
-            Image(painterResource(R.drawable.cthulhu),
-                "Cthulhu",
-                modifier = Modifier
-                    .graphicsLayer(scaleX = scale, scaleY = scale)
-                    .fillMaxSize(0.7f)
-                    .align(Alignment.Center))
+            override fun onPause(owner: LifecycleOwner) {
+                onExit()
+                super.onPause(owner)
+            }
         }
-        ParticleAnimation(particles)
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 }
