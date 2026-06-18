@@ -16,22 +16,32 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +54,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.labapplication.ui.theme.LabApplicationTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +62,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LabApplicationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(Modifier.fillMaxSize()) { innerPadding ->
                     var selectedProduct by remember { mutableStateOf<Product?>(null) }
                     val products = mutableStateListOf(
                         Product("1", "Товар №1", 20f, R.drawable.oil),
@@ -74,19 +85,50 @@ class MainActivity : ComponentActivity() {
                         Product("1", "Товар №19", 20f, R.drawable.shrimp),
                         Product("1", "Товар №20", 20f, R.drawable.tomato)
                         )
-                    LazyColumn(Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize())
+                    Column(Modifier.padding(innerPadding))
                     {
-                        stickyHeader { selectedProduct.let { Text(it?.title?:"") } }
-                        items(products){
-                            product ->
-                                HorizontalProductCard(product, Modifier
-                                    .padding(5.dp)
-                                    .fillMaxWidth()
-                                    .border(4.dp, Color.Black)
-                                    .height(200.dp), {selectedProduct = product})
-                        }
+//                        Box(Modifier.weight(2f), contentAlignment = Alignment.BottomEnd) {
+//                            val listState = rememberLazyListState()
+//                            val showButton = remember {
+//                                derivedStateOf { listState.firstVisibleItemIndex > 0 }
+//                            }
+//                            LazyColumn(Modifier.fillMaxSize(), state = listState)
+//                            {
+//                                item { Text(selectedProduct?.title?:"") }
+//
+//                                items(products){
+//                                        product ->
+//                                    HorizontalProductCard(product, Modifier
+//                                        .padding(5.dp)
+//                                        .fillMaxWidth()
+//                                        .border(4.dp, Color.Black)
+//                                        .height(200.dp), {selectedProduct = product})
+//                                }
+//                            }
+//
+//                            val coroutineScope = rememberCoroutineScope()
+//                            Button({coroutineScope.launch {
+//                                listState.scrollToItem(0) }
+//                            }, enabled = showButton.value, )
+//                            {
+//                                Text("Назад")
+//                            }
+//                        }
+//
+//                        LazyRow(Modifier
+//                            .weight(1f))
+//                        {
+//                            items(products){
+//                                product ->
+//                                VerticalProductCard(product, Modifier
+//                                    .padding(5.dp)
+//                                    .fillMaxWidth()
+//                                    .border(4.dp, Color.Black)
+//                                    .height(200.dp), {selectedProduct = product})
+//                            }
+//                        }
+//                        ProductVerticalGrid(products, Modifier.fillMaxSize())
+                        ProductHorizontalGrid(products, Modifier.fillMaxSize())
                     }
                 }
             }
@@ -96,7 +138,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun HorizontalProductCard(product : Product, modifier: Modifier, onClick : () -> Unit){
-    Card(modifier= modifier, onClick = onClick){
+    Card(onClick, modifier){
         Row(horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically)
         {
@@ -115,21 +157,61 @@ fun HorizontalProductCard(product : Product, modifier: Modifier, onClick : () ->
 
 @Composable
 fun VerticalProductCard(product : Product, modifier: Modifier, onClick : () -> Unit){
-    Card(onClick, modifier){
-        Column (verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally)
-        {
-            Image(ImageBitmap.imageResource(product.imageId),
-                "Изображение с идентификатором #${product.imageId}",
+    Card(
+        onClick = onClick,
+        modifier = modifier.padding(8.dp) // Добавим красивые отступы между карточками
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp), // Внутренний отступ в карточке
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Убираем weight, задаем картинке фиксированный размер (например, 100.dp)
+            Image(
+                bitmap = ImageBitmap.imageResource(product.imageId),
+                contentDescription = "Изображение товара ${product.title}",
                 modifier = Modifier
+                    .width(100.dp)
+                    .height(100.dp)
                     .clip(CircleShape)
-                    .weight(70f))
+            )
 
-            Column(Modifier.weight(30f).background(Color.Transparent)) {
+            // Убираем weight, элементы текста сами займут нужную высоту
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(product.title)
-                Text(product.price.toString())
+                Text("${product.price} руб.")
             }
         }
+    }
+}
 
+@Composable
+fun ProductVerticalGrid(products : List<Product>, modifier: Modifier){
+    LazyVerticalGrid(
+        GridCells.Fixed(2),
+        modifier
+    ) {
+        items(products) { product ->
+            VerticalProductCard(product, Modifier.fillMaxWidth()) {}
+        }
+    }
+}
+
+@Composable
+fun ProductHorizontalGrid(products : List<Product>, modifier: Modifier){
+    LazyHorizontalGrid(
+        GridCells.Fixed(2),
+        modifier
+    ) {
+        items(products) { product ->
+            VerticalProductCard(product, Modifier.fillMaxWidth()) {}
+        }
     }
 }
