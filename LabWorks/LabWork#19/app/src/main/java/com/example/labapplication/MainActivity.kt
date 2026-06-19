@@ -87,48 +87,48 @@ class MainActivity : ComponentActivity() {
                         )
                     Column(Modifier.padding(innerPadding))
                     {
-//                        Box(Modifier.weight(2f), contentAlignment = Alignment.BottomEnd) {
-//                            val listState = rememberLazyListState()
-//                            val showButton = remember {
-//                                derivedStateOf { listState.firstVisibleItemIndex > 0 }
-//                            }
-//                            LazyColumn(Modifier.fillMaxSize(), state = listState)
-//                            {
-//                                item { Text(selectedProduct?.title?:"") }
-//
-//                                items(products){
-//                                        product ->
-//                                    HorizontalProductCard(product, Modifier
-//                                        .padding(5.dp)
-//                                        .fillMaxWidth()
-//                                        .border(4.dp, Color.Black)
-//                                        .height(200.dp), {selectedProduct = product})
-//                                }
-//                            }
-//
-//                            val coroutineScope = rememberCoroutineScope()
-//                            Button({coroutineScope.launch {
-//                                listState.scrollToItem(0) }
-//                            }, enabled = showButton.value, )
-//                            {
-//                                Text("Назад")
-//                            }
-//                        }
-//
-//                        LazyRow(Modifier
-//                            .weight(1f))
-//                        {
-//                            items(products){
-//                                product ->
-//                                VerticalProductCard(product, Modifier
-//                                    .padding(5.dp)
-//                                    .fillMaxWidth()
-//                                    .border(4.dp, Color.Black)
-//                                    .height(200.dp), {selectedProduct = product})
-//                            }
-//                        }
+                        Box(Modifier.weight(2f), contentAlignment = Alignment.BottomEnd) {
+                            val listState = rememberLazyListState()
+                            val showButton = remember {
+                                derivedStateOf { listState.firstVisibleItemIndex > 0 }
+                            }
+                            LazyColumn(Modifier.fillMaxSize(), state = listState)
+                            {
+                                item { Text(selectedProduct?.title?:"") }
+
+                                items(products){
+                                        product ->
+                                    HorizontalProductCard(product, Modifier
+                                        .padding(5.dp)
+                                        .fillMaxWidth()
+                                        .border(4.dp, Color.Black)
+                                        .height(200.dp), {selectedProduct = product})
+                                }
+                            }
+
+                            val coroutineScope = rememberCoroutineScope()
+                            Button({coroutineScope.launch {
+                                listState.scrollToItem(0) }
+                            }, enabled = showButton.value, )
+                            {
+                                Text("Назад")
+                            }
+                        }
+
+                        LazyRow(Modifier
+                            .weight(1f))
+                        {
+                            items(products){
+                                product ->
+                                VerticalProductCard(product, Modifier
+                                    .padding(5.dp)
+                                    .fillMaxWidth()
+                                    .border(4.dp, Color.Black)
+                                    .height(200.dp), {selectedProduct = product})
+                            }
+                        }
 //                        ProductVerticalGrid(products, Modifier.fillMaxSize())
-                        ProductHorizontalGrid(products, Modifier.fillMaxSize())
+//                        ProductHorizontalGrid(products, Modifier.fillMaxSize())
                     }
                 }
             }

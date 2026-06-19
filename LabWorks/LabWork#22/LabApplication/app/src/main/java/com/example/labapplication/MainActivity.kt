@@ -8,11 +8,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.labapplication.screens.Download
+import com.example.labapplication.screens.Badge
+import com.example.labapplication.screens.LinearDownload
+import com.example.labapplication.screens.Timer
 import com.example.labapplication.ui.theme.LabApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,7 +22,10 @@ class MainActivity : ComponentActivity() {
             LabApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(Modifier.padding(innerPadding)){
-                        Download()
+//                        Download()
+//                        LinearDownload()
+//                        Timer()
+                        Badge()
                     }
                 }
             }

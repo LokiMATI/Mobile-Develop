@@ -8,11 +8,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PostsViewModel(val client: NetworkClient) : ViewModel() {
+class PostsViewModel() : ViewModel() {
+    public var client: NetworkClient? = null
     private val _posts = MutableStateFlow<List<Post>>(listOf())
     val posts: StateFlow<List<Post>> = _posts
     fun loadPosts() {
-        viewModelScope.launch { _posts.value = client.apiService.getPosts() }
+        viewModelScope.launch {
+            _posts.value = client!!.apiService.getPosts()
+        }
     }
 
 }
